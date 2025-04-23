@@ -8,6 +8,8 @@
  * an argument and 7
  */
 
+//import { s } from "vitest/dist/env-afee91f0.js";
+
 const first = () => Promise.resolve(3);
 const second = (val) => {
   return Promise.resolve(val + 7);
@@ -21,13 +23,12 @@ const second = (val) => {
  */
 
 // Refactor the following code...
-export const handlePromise = first();
-const secondPromise = handlePromise.then((val) => val);
-const final = secondPromise.then((res) => second(res));
-final.then((val) => {
-  console.log(val);
-  return val;
-});
+export const handlePromise = first()
+  .then((val) => second(val))
+  .then((resolve) => {
+    console.log(resolve);
+    return resolve;
+  });
 
 // === TEST YOURSELF ===
 // Once you're finished run the test with "npm run test-4"

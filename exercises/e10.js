@@ -1,17 +1,63 @@
 export const getFirstResolvedPromise = (promises) => {
   //*  write code to pass test ⬇ ️
+  const wrapped = promises.map(p => 
+    p.then(res => res).catch(() => new Promise(() => {}))
+  );
+  return Promise.race(wrapped);
 };
 
 export const getFirstPromiseOrFail = (promises) => {
-  //*  write code to pass test ⬇ ️
+  return new Promise((resolve, reject) => {
+    let settled = false;
+    let rejectedCount = 0;
+
+    promises.forEach(p => {
+      Promise.resolve(p)
+        .then(val => {
+          if (!settled) {
+            settled = true;
+            resolve(val);
+          }
+        })
+        .catch((error) => {
+          if(!settled) {
+            settled = true
+            reject(error)
+            
+          }
+          
+          else { 
+           if (rejectedCount === promises.length && !settled) {
+            rejectedCount ++
+            reject("All promises were rejected");
+           }
+            
+          }
+        });
+    });
+  });
 };
+
+
 
 export const getQuantityOfRejectedPromises = (promises) => {
   //*  write code to pass test ⬇ ️
+  return Promise.allSettled(promises).then((results) => {
+    const rejectedCount = results.filter (
+      (result) => result.status === "rejected"
+    ).length
+    return rejectedCount
+  })
 };
 
 export const getQuantityOfFulfilledPromises = (promises) => {
   //*  write code to pass test ⬇ ️
+  return Promise.allSettled(promises).then((results) => {
+    const resolvedCount = results.filter (
+      (result) => result.status === "fulfilled"
+    ).length
+    return resolvedCount
+  })
 };
 
 //!  ⬇ ⬇ ⬇ ⬇ Don't Edit This Array ⬇ ⬇ ⬇ ⬇
@@ -45,4 +91,12 @@ export const fetchAllCharactersByIds = async (ids) => {
   // To solve this you must fetch all characters passed in the array at the same time
   // use the `fetchCharacterById` function above to make this work
   //*  write code to pass test ⬇ ️
+  const promises = ids.map((id) => fetchCharacterById(id));
+  return Promise.allSettled(promises).then((results) => {
+    const anyRejected = results.some((res) => res.status === "rejected");
+    if (anyRejected) {
+      return [];
+    }
+    return results.map((res) => res.value);
+  });
 };

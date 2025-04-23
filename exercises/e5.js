@@ -8,8 +8,8 @@
  *          export const Promise
  */
 
-export const attachTitle = () => {
-  // Your code goes here...
+export const attachTitle = (arg) => {
+  return `DR. ${arg}`;
 };
 
 /**
@@ -21,7 +21,14 @@ export const attachTitle = () => {
  */
 
 export const getPromise = () => {
-  // Your code goes here...
+  //Returns a fulfilled promise with a value of `'MANHATTAN'`. 
+  return Promise.resolve("MANHATTAN")
+    // Build a promise chain off the promise we just constructed that first calls `attachTitle` then calls `console.log`.
+    .then(attachTitle)
+    .then((val) => {
+      console.log(val);
+      return val;
+    })
 };
 
 // === TEST YOURSELF ===
